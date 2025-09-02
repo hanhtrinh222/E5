@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>WebSocket Demo</title>
+</head>
+<body>
+  <h2>WebSocket Client Demo</h2>
+  <input type="text" id="messageInput" placeholder="Type a message..." />
+  <button onclick="sendMessage()">Send</button>
+  <div id="log" style="margin-top:20px; border:1px solid #ccc; padding:10px; height:200px; overflow:auto;"></div>
+
+  <script>
+    // Kết nối tới WebSocket server
+    const ws = new WebSocket("ws://localhost:8080/ws");
+    const logDiv = document.getElementById("log");
+
+    ws.onopen = function() {
+      log("WebSocket connected!");
+      ws.send("Hello from browser client!");
+    };
+
+    ws.onmessage = function(event) {
+      log("Received: " + event.data);
+    };
+
+    ws.onclose = function() {
+      log("WebSocket closed");
+    };
+
+    ws.onerror = function(error) {
+      log("WebSocket error: " + error);
+    };
+
+    function sendMessage() {
+      const input = document.getElementById("messageInput");
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(input.value);
+        log("Sent: " + input.value);
+        input.value = "";
+      } else {
+        log("WebSocket is not open.");
+      }
+    }
+
+    function log(msg) {
+      const el = document.createElement("div");
+      el.textContent = msg;
+      logDiv.appendChild(el);
+      logDiv.scrollTop = logDiv.scrollHeight;
+    }
+  </script>
+</body>
+</html>
